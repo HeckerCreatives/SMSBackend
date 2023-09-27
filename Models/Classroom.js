@@ -7,7 +7,7 @@ const ClassroomSchema = new mongoose.Schema(
             ref: "Teacher"
         },
         subject: {
-            type: mongoose.Schema.Types.ObjectId,
+            type: [mongoose.Schema.Types.ObjectId],
             ref: "Subject"
         },
         yearandsection: {

@@ -4,6 +4,8 @@ const routers = app => {
     app.use("/yearandsection", require("./YearAndSection"))
     app.use("/quarter", require("./Quarter"))
     app.use("/student", require("./Student"))
+    app.use("/subject", require("./Subject"))
+    app.use("/classroom", require("./Classroom"))
 }
 
 module.exports = routers
