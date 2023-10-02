@@ -26,6 +26,7 @@ exports.create = (req, res) => {
                     mother: mother,
                     father: father,
                     yearandsection: yearandsection,
+                    role: "629a98a5a881575c013b5327",
                     userdetails: data._id
                 }
 
@@ -82,4 +83,16 @@ exports.find = (req, res) => {
         .catch(error => res.status(400).json({ message: "bad-request", data: error.message}))
     })
     .catch(error => res.status(400).json({ message: "bad-request", data: error.message}))
+}
+
+exports.findstudent = (req, res) => {
+    const { id } = req.body
+
+    Student.find({yearandsection: id})
+    .populate({ path: "yearandsection" })
+    .sort({'createdAt': -1})
+    .then(data => {
+        res.json({message: "success", data: data})
+    }) 
+    .catch(error => res.status(400).json({ message: "bad-request", data: error.message}))   
 }

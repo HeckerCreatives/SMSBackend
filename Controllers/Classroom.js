@@ -28,10 +28,11 @@ exports.find = (req, res) => {
     .limit(pageOptions.limit)
     .sort({'createdAt': -1})    
     .then(items => {
+        console.log(items.filter(e => e.adviser.ban))
         Classroom.countDocuments()
         .then(count => {
             const totalPages = Math.ceil(count / 10)
-            res.json({ message: "success", data: items.filter(e => !e.deletedAt), pages: totalPages })
+            res.json({ message: "success", data: items.filter(e => !e.adviser.ban), pages: totalPages })
         })
         .catch(error => res.status(400).json({ message: "bad-request", data: error.message}))
     })

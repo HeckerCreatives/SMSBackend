@@ -54,3 +54,18 @@ exports.destroy = (req, res) => {
     })
     .catch(error => res.status(400).json({ message: "bad-request", data: error.message }))
 }
+
+exports.teachersubject = (req,res) => {
+    const { id } = req.body
+
+    Subject.find({teacher: id})
+    .populate([
+        {path: "yearandsection"},
+        {path: "teacher"}
+    ])
+    .sort({'createdAt': -1})
+    .then(data => {
+        res.json({message: "success", data: data.filter(e => !e.deletedAt)})
+    })
+    .catch(error => res.status(400).json({ message: "bad-request", data: error.message }))
+}

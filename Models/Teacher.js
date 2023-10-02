@@ -25,7 +25,10 @@ const teacherSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: "Login"
         },
-        
+        role: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Roles"
+        }
     },
     {
         timestamps: true
