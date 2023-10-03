@@ -4,18 +4,18 @@ const gradeSchema = new mongoose.Schema(
     {
         student: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "Teacher"
+            ref: "Student"
         },
         subject: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Subject"
         },
         grade: {
-            type: String,
+            type: Number,
         },
-        Quarter: {
+        quarter: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "Subject"
+            ref: "Quarter"
         },
     },
     {

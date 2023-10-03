@@ -1,5 +1,5 @@
 const router = require("express").Router(),
-    { create, find, update, destroy, teachersubject} = require("../Controllers/Subject");
+    { create, find, update, destroy, teachersubject, findstudent} = require("../Controllers/Subject");
 
 router
     .get("/find", find)
@@ -7,5 +7,5 @@ router
     .post("/update/:id", update)
     .post("/destroy/:id", destroy)
     .post("/teachersubject", teachersubject)
-
+    .post("/findstudent", findstudent)
 module.exports = router;

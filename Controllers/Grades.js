@@ -1,32 +1,46 @@
+const Grade = require("../Models/Grades")
+const Quarter = require("../Models/Quarter")
 const Subject = require("../Models/Subject")
 const Student = require("../Models/Student")
+
 exports.create = (req, res) => {
-    Subject.create(req.body)
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const quartersToFind = [
+        `${currentYear} Quarter 1`,
+        `${currentYear} Quarter 2`,
+        `${currentYear} Quarter 3`,
+        `${currentYear} Quarter 4`,
+      ];
+    Grade.create(req.body)
     .then(item => res.json({message: "success", data: item}))
     .catch(err => res.status(400).json({message:"Badrequest", error: err.message }))
 }
 
 exports.update = (req, res) => {
-    Subject.findByIdAndUpdate(req.params.id, req.body, {new: true})
+    const {grade} = req.body
+    Grade.findByIdAndUpdate(req.params.id, {grade: grade}, {new: true})
     .then(item => res.json({message: "success", data: item}))
     .catch(err => res.status(400).json({message:"Badrequest", error: err.message }))
 }
 
 exports.find = (req, res) => {
+    const { id } = req.body
     const pageOptions = {
         page: parseInt(req.query.page) || 0,
         limit: parseInt(req.query.limit) || 10
     }
-    Subject.find()
+    Grade.find({student: id})
     .populate([
-    {path: "yearandsection"},
-    {path: "teacher"}
+    {path: "student"},
+    {path: "subject"},
+    {path: "quarter"},
     ])
     .skip(pageOptions.page * pageOptions.limit)
     .limit(pageOptions.limit)
     .sort({'createdAt': -1})    
     .then(items => {
-        Subject.countDocuments()
+        Grade.countDocuments({student: id})
         .then(count => {
             const totalPages = Math.ceil(count / 10)
             res.json({ message: "success", data: items.filter(e => !e.deletedAt), pages: totalPages })
@@ -36,44 +50,11 @@ exports.find = (req, res) => {
     .catch(error => res.status(400).json({ message: "bad-request", data: error.message}))
 }
 
-exports.destroy = (req, res) => {
-    const banData = {
-        deletedAt: new Date().toLocaleString()
-    }
-    Subject.find({_id: req.params.id})
-    .then(data => {
-        if(!data[0].deletedAt){
-            Subject.findByIdAndUpdate(req.params.id, banData)
-            .then(() => {
-                res.json({message: "success"})
-            })
-            .catch(error => res.status(400).json({ message: "bad-request", data: error.message }))
-        } else {
-            res.json({message: "failed", data: "this is already deleted"})
-        }
-    })
-    .catch(error => res.status(400).json({ message: "bad-request", data: error.message }))
-}
-
-exports.teachersubject = (req,res) => {
-    const { id } = req.body
-
-    Subject.find({teacher: id})
-    .populate([
-        {path: "yearandsection"},
-        {path: "teacher"}
-    ])
-    .sort({'createdAt': -1})
-    .then(data => {
-        res.json({message: "success", data: data.filter(e => !e.deletedAt)})
-    })
-    .catch(error => res.status(400).json({ message: "bad-request", data: error.message }))
-}
-
 exports.findstudent = (req, res) => {
     const { id } = req.body;
-
-    Subject.find({ teacher: id })
+    Quarter.findOne({})
+    .then(quarter => {
+        Subject.find({ teacher: id })
         .populate([
             { path: "yearandsection" },
         ])
@@ -93,8 +74,9 @@ exports.findstudent = (req, res) => {
                         const combinedData = subjects.map(subject => {
                             const matchingStudents = students.filter(student => String(student.yearandsection._id) === String(subject.yearandsection._id));
                             const studentData = matchingStudents.map(matchingStudent => ({
-                                subjectName: subject.subjectname,
+                                subject: subject,
                                 student: matchingStudent,
+                                quarter: quarter
                             }));
                             return studentData.length > 0 ? studentData : null; // If no matching students are found, set to null
                         }).flat();
@@ -107,5 +89,47 @@ exports.findstudent = (req, res) => {
             }
         })
         .catch(error => res.status(400).json({ message: "bad-request", data: error.message }));
+    })
+    .catch(error => res.status(400).json({ message: "bad-request", data: error.message }));
 }
 
+exports.findone = (req, res) => {
+    const { subjectid, studentid } = req.body
+    const pageOptions = {
+        page: parseInt(req.query.page) || 0,
+        limit: parseInt(req.query.limit) || 10
+    }
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const quartersToFind = [
+        `${currentYear} Quarter 1`,
+        `${currentYear} Quarter 2`,
+        `${currentYear} Quarter 3`,
+        `${currentYear} Quarter 4`,
+      ];
+    Quarter.find({
+    $or: quartersToFind.map((quarter) => ({ $quarter: quarter })),
+    })
+    .then((items) => {
+        const itemArray = items.map((item) => item._id); // This will contain an array of _id values
+    Grade.find({subject: subjectid, student: studentid, $or:[{"quarter":{"$in":itemArray}}]})
+    .populate([
+    {path: "student"},
+    {path: "subject"},
+    {path: "quarter"},
+    ])
+    .skip(pageOptions.page * pageOptions.limit)
+    .limit(pageOptions.limit)
+    .sort({'createdAt': 1})    
+    .then(items => {
+        Grade.countDocuments({subject: subjectid, student: studentid, $or:[{"quarter":{"$in":itemArray}}]})
+        .then(count => {
+            const totalPages = Math.ceil(count / 10)
+            res.json({ message: "success", data: items.filter(e => !e.deletedAt), pages: totalPages })
+        })
+        .catch(error => res.status(400).json({ message: "bad-request", data: error.message}))
+    })
+    .catch(error => res.status(400).json({ message: "bad-request", data: error.message}))
+    })
+    
+}
