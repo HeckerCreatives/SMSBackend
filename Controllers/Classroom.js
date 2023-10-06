@@ -61,8 +61,8 @@ exports.findadvisory = (req, res) => {
         .then(subjects => {
             if (subjects && subjects.length > 0) {
                 const yearAndSectionIds = subjects.map(subject => subject.yearandsection._id);
-
-                Student.find({ yearandsection: { $in: data.yearandsection } })
+                
+                Student.find({ yearandsection: { $in: data.yearandsection._id } })
                     .populate([
                         { path: "userdetails" },
                         { path: "yearandsection" }
@@ -70,13 +70,18 @@ exports.findadvisory = (req, res) => {
                     .sort({ 'createdAt': -1 })
                     .then(students => {
 
-                        const combinedData = students.map(student => ({
-                            // subject: advisoryClass.subject,
-                            student: student,
-                            quarter: quarter,
+                       // Create an array to store the combined data
+                       const combinedData = subjects.map(subject => {
+                        const matchingStudents = students.filter(student => String(student.yearandsection._id) === String(subject.yearandsection._id));
+                        const studentData = matchingStudents.map(matchingStudent => ({
+                            subject: subject,
+                            student: matchingStudent,
+                            quarter: quarter
                         }));
+                        return studentData.length > 0 ? studentData : null; // If no matching students are found, set to null
+                    }).flat();
 
-                        res.json({ message: "success", data: combinedData });
+                    res.json({ message: "success", data: combinedData });
                     })
                     .catch(error => res.status(400).json({ message: "bad-request", data: error.message }));
             } else {
