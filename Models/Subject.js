@@ -13,6 +13,15 @@ const subjectSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: "YearAndSection"
         },
+        writtenwork: {
+            type: String
+        },
+        performancetask: {
+            type: String
+        },
+        quarterlyassessment: {
+            type: String
+        },
         deletedAt: {
             type: String,
         },

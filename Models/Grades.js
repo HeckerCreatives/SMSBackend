@@ -10,13 +10,46 @@ const gradeSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: "Subject"
         },
-        grade: {
-            type: Number,
-        },
         quarter: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Quarter"
         },
+        writtenworks: [{
+            type: Number
+        }],
+        writtenworksTotal: {
+            type: Number
+        },
+        writtenworksPS: {
+            type: Number
+        },
+        writtenworksWS: {
+            type: Number
+        },
+        performancetask: [{
+            type: Number
+        }],
+        performancetaskTotal: {
+            type: Number
+        },
+        performancetaskPS: {
+            type: Number
+        },
+        performancetaskWS: {
+            type: Number
+        },
+        quarterlyassessment: [{
+            type: Number
+        }],
+        quarterlyassessmentTotal: {
+            type: Number
+        },
+        quarterlyassessmentPS: {
+            type: Number
+        },
+        quarterlyassessmentWS: {
+            type: Number
+        }
     },
     {
         timestamps: true
