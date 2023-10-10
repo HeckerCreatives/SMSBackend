@@ -17,6 +17,9 @@ const gradeSchema = new mongoose.Schema(
         writtenworks: [{
             type: Number
         }],
+        writtenworksHighestTotal: [{
+            type: Number
+        }],
         writtenworksTotal: {
             type: Number
         },
@@ -29,6 +32,9 @@ const gradeSchema = new mongoose.Schema(
         performancetask: [{
             type: Number
         }],
+        performancetaskHighestTotal: [{
+            type: Number
+        }],
         performancetaskTotal: {
             type: Number
         },
@@ -38,10 +44,10 @@ const gradeSchema = new mongoose.Schema(
         performancetaskWS: {
             type: Number
         },
-        quarterlyassessment: [{
+        quarterlyassessment: {
             type: Number
-        }],
-        quarterlyassessmentTotal: {
+        },
+        quarterlyassessmentHighestTotal: {
             type: Number
         },
         quarterlyassessmentPS: {

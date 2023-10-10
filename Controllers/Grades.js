@@ -11,7 +11,7 @@ exports.create = (req, res) => {
         `${currentYear} Quarter 2`,
         `${currentYear} Quarter 3`,
         `${currentYear} Quarter 4`,
-      ];
+    ];
     Grade.create(req.body)
     .then(item => res.json({message: "success", data: item}))
     .catch(err => res.status(400).json({message:"Badrequest", error: err.message }))
@@ -61,7 +61,11 @@ exports.findstudent = (req, res) => {
         .sort({ 'createdAt': -1 })
         .then(subjects => {
             if (subjects && subjects.length > 0) {
-                const yearAndSectionIds = subjects.map(subject => subject.yearandsection._id);
+                const yearAndSectionIds = subjects.map(subject => subject.yearandsection._id)
+                
+                // if(yearAndSectionIds.length === 0){
+                //     return res.json({message: "failed", data: "No Students"})
+                // }
 
                 Student.find({ yearandsection: { $in: yearAndSectionIds } })
                     .populate([
@@ -70,18 +74,23 @@ exports.findstudent = (req, res) => {
                     ])
                     .sort({ 'createdAt': -1 })
                     .then(students => {
-                        // Create an array to store the combined data
-                        const combinedData = subjects.map(subject => {
-                            const matchingStudents = students.filter(student => String(student.yearandsection._id) === String(subject.yearandsection._id));
-                            const studentData = matchingStudents.map(matchingStudent => ({
-                                subject: subject,
-                                student: matchingStudent,
-                                quarter: quarter
-                            }));
-                            return studentData.length > 0 ? studentData : null; // If no matching students are found, set to null
-                        }).flat();
+                        if(students){
+                            // Create an array to store the combined data
+                            const combinedData = subjects.map(subject => {
+                                const matchingStudents = students.filter(student => String(student.yearandsection._id) === String(subject.yearandsection._id));
+                                const studentData = matchingStudents.map(matchingStudent => ({
+                                    subject: subject,
+                                    student: matchingStudent,
+                                    quarter: quarter
+                                }));
+                                return studentData.length > 0 ? studentData : null; // If no matching students are found, set to null
+                            }).flat();
 
-                        res.json({ message: "success", data: combinedData });
+                            res.json({ message: "success", data: combinedData });
+                        } else {
+                             res.json({message: "failed", data: "No Students"})
+                        }
+                        
                     })
                     .catch(error => res.status(400).json({ message: "bad-request", data: error.message }));
             } else {

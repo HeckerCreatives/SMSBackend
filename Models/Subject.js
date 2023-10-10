@@ -13,6 +13,9 @@ const subjectSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: "YearAndSection"
         },
+        shift: {
+            type: String
+        },
         writtenwork: {
             type: String
         },
