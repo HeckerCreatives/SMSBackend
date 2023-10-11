@@ -55,6 +55,12 @@ const gradeSchema = new mongoose.Schema(
         },
         quarterlyassessmentWS: {
             type: Number
+        },
+        initialgrade: {
+            type: Number
+        },
+        quarterlygrade: {
+            type: Number
         }
     },
     {

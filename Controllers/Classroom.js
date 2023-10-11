@@ -62,14 +62,14 @@ exports.findadvisory = (req, res) => {
             if (subjects && subjects.length > 0) {
                 const yearAndSectionIds = subjects.map(subject => subject.yearandsection._id);
                 
-                Student.find({ yearandsection: { $in: data.yearandsection._id } })
+                Student.find({ yearandsection: data.yearandsection._id })
                     .populate([
                         { path: "userdetails" },
                         { path: "yearandsection" }
                     ])
                     .sort({ 'createdAt': -1 })
                     .then(students => {
-
+                        // console.log(students)
                        // Create an array to store the combined data
                        const combinedData = subjects.map(subject => {
                         const matchingStudents = students.filter(student => String(student.yearandsection._id) === String(subject.yearandsection._id));
