@@ -52,6 +52,8 @@ exports.find = (req, res) => {
 
 exports.findstudent = (req, res) => {
     const { id } = req.body;
+    // const currentDate = new Date();
+    // const currentYear = currentDate.getFullYear();
     Quarter.findOne({})
     .then(quarter => {
         Subject.find({ teacher: id })
@@ -77,7 +79,8 @@ exports.findstudent = (req, res) => {
                         if(students){
                             // Create an array to store the combined data
                             const combinedData = subjects.map(subject => {
-                                const matchingStudents = students.filter(student => String(student.yearandsection._id) === String(subject.yearandsection._id));
+                                const matchingStudents = students.filter(student => String(student.yearandsection._id) === String(subject.yearandsection._id) && student.yearandsection.year === quarter.year);
+                                
                                 const studentData = matchingStudents.map(matchingStudent => ({
                                     subject: subject,
                                     student: matchingStudent,
@@ -85,7 +88,6 @@ exports.findstudent = (req, res) => {
                                 }));
                                 return studentData.length > 0 ? studentData : null; // If no matching students are found, set to null
                             }).flat();
-
                             res.json({ message: "success", data: combinedData });
                         } else {
                              res.json({message: "failed", data: "No Students"})
@@ -108,20 +110,20 @@ exports.findone = (req, res) => {
         page: parseInt(req.query.page) || 0,
         limit: parseInt(req.query.limit) || 10
     }
-    const currentDate = new Date();
-    const currentYear = currentDate.getFullYear();
-    const quartersToFind = [
-        `${currentYear} Quarter 1`,
-        `${currentYear} Quarter 2`,
-        `${currentYear} Quarter 3`,
-        `${currentYear} Quarter 4`,
-      ];
-    Quarter.find({
-    $or: quartersToFind.map((quarter) => ({ $quarter: quarter })),
+    // const currentDate = new Date();
+    // const currentYear = currentDate.getFullYear();
+    // const quartersToFind = [
+    //     `${currentYear} Quarter 1`,
+    //     `${currentYear} Quarter 2`,
+    //     `${currentYear} Quarter 3`,
+    //     `${currentYear} Quarter 4`,
+    //   ];
+    Quarter.findOne({
+    // $or: quartersToFind.map((quarter) => ({ $quarter: quarter })),
     })
     .then((items) => {
-        const itemArray = items.map((item) => item._id); // This will contain an array of _id values
-    Grade.find({subject: subjectid, student: studentid, $or:[{"quarter":{"$in":itemArray}}]})
+        // const itemArray = items.map((item) => item._id); // This will contain an array of _id values
+    Grade.find({subject: subjectid, student: studentid, $or:[{"quarter":{"$in":items._id}}]})
     .populate([
     {path: "student"},
     {path: "subject"},
@@ -131,7 +133,7 @@ exports.findone = (req, res) => {
     .limit(pageOptions.limit)
     .sort({'createdAt': 1})    
     .then(items => {
-        Grade.countDocuments({subject: subjectid, student: studentid, $or:[{"quarter":{"$in":itemArray}}]})
+        Grade.countDocuments({subject: subjectid, student: studentid, $or:[{"quarter":{"$in":items._id}}]})
         .then(count => {
             const totalPages = Math.ceil(count / 10)
             res.json({ message: "success", data: items.filter(e => !e.deletedAt), pages: totalPages })

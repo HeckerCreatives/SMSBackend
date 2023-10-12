@@ -72,7 +72,7 @@ exports.findadvisory = (req, res) => {
                         // console.log(students)
                        // Create an array to store the combined data
                        const combinedData = subjects.map(subject => {
-                        const matchingStudents = students.filter(student => String(student.yearandsection._id) === String(subject.yearandsection._id));
+                        const matchingStudents = students.filter(student => String(student.yearandsection._id) === String(subject.yearandsection._id)&& student.yearandsection.year === quarter.year);
                         const studentData = matchingStudents.map(matchingStudent => ({
                             subject: subject,
                             student: matchingStudent,

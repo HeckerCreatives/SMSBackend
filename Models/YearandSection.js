@@ -3,7 +3,7 @@ const mongoose = require("mongoose")
 const yearandsectionSchema = new mongoose.Schema(
     {
         year: {
-            type: String,
+            type: Number,
         },
         section: {
             type: String,

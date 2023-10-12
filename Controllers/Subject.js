@@ -1,5 +1,6 @@
 const Subject = require("../Models/Subject")
 const Student = require("../Models/Student")
+const Quarter = require("../Models/Quarter")
 exports.create = (req, res) => {
     Subject.create(req.body)
     .then(item => res.json({message: "success", data: item}))
@@ -82,23 +83,29 @@ exports.destroy = (req, res) => {
 
 exports.teachersubject = (req,res) => {
     const { id } = req.body
-
-    Subject.find({teacher: id})
-    .populate([
-        {path: "yearandsection"},
-        {path: "teacher"}
-    ])
-    .sort({'createdAt': -1})
-    .then(data => {
-        res.json({message: "success", data: data.filter(e => !e.deletedAt)})
+    Quarter.findOne({})
+    .then(quarter => {
+        Subject.find({teacher: id})
+        .populate([
+            {path: "yearandsection"},
+            {path: "teacher"}
+        ])
+        .sort({'createdAt': -1})
+        .then(data => {
+            const items = data.filter(subject => subject.yearandsection.year === quarter.year)
+            console.log(data)
+            res.json({message: "success", data: items})
+        })
+        .catch(error => res.status(400).json({ message: "bad-request", data: error.message }))
     })
-    .catch(error => res.status(400).json({ message: "bad-request", data: error.message }))
+    
 }
 
 exports.findstudent = (req, res) => {
     const { id } = req.body;
-
-    Subject.find({ teacher: id })
+    Quarter.findOne({})
+    .then(quarter => {
+        Subject.find({ teacher: id })
         .populate([
             { path: "yearandsection" },
         ])
@@ -116,7 +123,7 @@ exports.findstudent = (req, res) => {
                     .then(students => {
                         // Create an array to store the combined data
                         const combinedData = subjects.map(subject => {
-                            const matchingStudents = students.filter(student => String(student.yearandsection._id) === String(subject.yearandsection._id));
+                            const matchingStudents = students.filter(student => String(student.yearandsection._id) === String(subject.yearandsection._id) && student.yearandsection.year === quarter.year);
                             const studentData = matchingStudents.map(matchingStudent => ({
                                 subjectName: subject.subjectname,
                                 student: matchingStudent,
@@ -132,5 +139,7 @@ exports.findstudent = (req, res) => {
             }
         })
         .catch(error => res.status(400).json({ message: "bad-request", data: error.message }));
+    })
+
 }
 

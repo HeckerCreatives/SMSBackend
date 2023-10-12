@@ -5,6 +5,9 @@ const quarterSchema = new mongoose.Schema(
         quarter: {
             type: String,
         },
+        year: {
+            type: Number
+        }
     },
     {
         timestamps: true
