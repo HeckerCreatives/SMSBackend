@@ -16,7 +16,7 @@ db.on('error', ()=> console.error.bind(console, "Connection to Database has an E
 db.once('open', ()=> console.log("We are now Connected to the Cloud."))
 
 const corsConfig = {
-    origin: ["http://localhost:8100","http://localhost:8100/"],
+    origin: ["http://localhost:8100","http://localhost:8100/", "capacitor-electron://-"],
     methods: ["GET", "POST", "PUT", "DELETE"], // List only` available methods
     credentials: true, // Must be set to true
     allowedHeaders: [
