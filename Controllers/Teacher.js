@@ -32,39 +32,50 @@ exports.createadmin = (req, res) => {
 
 }
 
-exports.create = (req, res) => {
+exports.create = async (req, res) => {
     const {username, password, firstname, middlename, lastname, contact, address,} = req.body;
     const Ldetail = {
         username: username,
         password: password
     }
-    Login.findOne({username: username})
-    .then(user => {
+    await Login.findOne({username: username})
+    .then(async user => {
         if(user){
             return res.json({message: "failed", data: "Username is already taken"})
         }
-        Login.create(Ldetail)
-        .then(data => {
 
-            if(data){
-
-                const Tdata = {
-                    firstname: firstname,
-                    middlename: middlename,
-                    lastname: lastname,
-                    contact: contact,
-                    address: address,
-                    role: "629a98a5a881575c013b5326",
-                    userdetail: data._id
-                }
-
-                Teacher.create(Tdata)
-                .then(item => res.json({message: "success", data: item}))
-                .catch(err => res.status(400).json({message:"Badrequest", error: err.message }))
+       await Teacher.findOne({ firstname: firstname, middlename: middlename, lastname: lastname })
+        .then(item => {
+            if(item){
+                return res.json({message: "failed", data: "Users Full Name Already exist"})
             }
-            
+
+            Login.create(Ldetail)
+            .then(data => {
+    
+                if(data){
+                    
+                    const Tdata = {
+                        firstname: firstname,
+                        middlename: middlename,
+                        lastname: lastname,
+                        contact: contact,
+                        address: address,
+                        role: "629a98a5a881575c013b5326",
+                        userdetail: data._id
+                    }
+    
+                    Teacher.create(Tdata)
+                    .then(item => res.json({message: "success", data: item}))
+                    .catch(err => res.status(400).json({message:"Badrequest", error: err.message }))
+                }
+                
+            })
+            .catch(err => res.status(400).json({message:"Badrequest", error: err.message }))
+
         })
-        .catch(err => res.status(400).json({message:"Badrequest", error: err.message }))
+
+       
         
     })
     .catch(err => res.status(400).json({message:"Badrequest", error: err.message }))
