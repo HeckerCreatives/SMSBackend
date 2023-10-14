@@ -33,7 +33,7 @@ exports.find = (req, res) => {
         Classroom.countDocuments()
         .then(count => {
             const totalPages = Math.ceil(count / 10)
-            res.json({ message: "success", data: items.filter(e => !e.adviser.ban), pages: totalPages })
+            res.json({ message: "success", data: items, pages: totalPages })
         })
         .catch(error => res.status(400).json({ message: "bad-request", data: error.message}))
     })

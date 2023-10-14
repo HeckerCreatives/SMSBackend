@@ -4,7 +4,7 @@ const Subject = require("../Models/Subject")
 const Student = require("../Models/Student")
 const Grade = require("../Models/Grades")
 const Quarter = require("../Models/Quarter")
-
+const Classroom = require("../Models/Classroom")
 exports.createadmin = (req, res) => {
 
     const adminlogin = {
@@ -113,15 +113,28 @@ exports.find = (req, res) => {
 }
 
 exports.ban = (req, res) => {
-    // const banData = {
-    //     ban: true
-    // }
     Teacher.find({_id: req.params.id})
     .then(data => {
         if(!data[0].ban){
             Teacher.findByIdAndDelete(req.params.id)
-            .then(() => {
-                res.json({message: "success"})
+            .then((data) => {
+                Login.findOneAndDelete({_id: data.userdetail})
+                .then(() => {
+                    Classroom.findOne({adviser: req.params.id})
+                    .then(item => {
+                        if(item){
+                            Classroom.findByIdAndDelete(item._id)
+                            .then(() => {
+                                res.json({message: "success"})
+                            })
+                            .catch(error => res.status(400).json({ message: "bad-request", data: error.message }))
+                        } else {
+                            res.json({message: "success"})
+                        }
+                    })
+                    .catch(error => res.status(400).json({ message: "bad-request", data: error.message }))
+                })
+                .catch(error => res.status(400).json({ message: "bad-request", data: error.message }))
             })
             .catch(error => res.status(400).json({ message: "bad-request", data: error.message }))
         } else {
