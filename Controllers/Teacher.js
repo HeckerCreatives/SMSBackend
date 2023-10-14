@@ -113,13 +113,13 @@ exports.find = (req, res) => {
 }
 
 exports.ban = (req, res) => {
-    const banData = {
-        ban: true
-    }
+    // const banData = {
+    //     ban: true
+    // }
     Teacher.find({_id: req.params.id})
     .then(data => {
         if(!data[0].ban){
-            Teacher.findByIdAndUpdate(req.params.id, banData)
+            Teacher.findByIdAndDelete(req.params.id)
             .then(() => {
                 res.json({message: "success"})
             })
@@ -131,24 +131,24 @@ exports.ban = (req, res) => {
     .catch(error => res.status(400).json({ message: "bad-request", data: error.message }))
 }
 
-exports.unban = (req, res) => {
-    const banData = {
-        ban: false
-    }
-    Teacher.find({_id: req.params.id})
-    .then(data => {
-        if(data[0].ban){
-            Teacher.findByIdAndUpdate(req.params.id, banData)
-            .then(() => {
-                res.json({message: "success"})
-            })
-            .catch(error => res.status(400).json({ message: "bad-request", data: error.message }))
-        } else {
-            res.json({message: "failed", data: "this user is already unban"})
-        }
-    })
-    .catch(error => res.status(400).json({ message: "bad-request", data: error.message }))
-}
+// exports.unban = (req, res) => {
+//     // const banData = {
+//     //     ban: false
+//     // }
+//     Teacher.find({_id: req.params.id})
+//     .then(data => {
+//         if(data[0].ban){
+//             Teacher.findByIdAndDelete(req.params.id)
+//             .then(() => {
+//                 res.json({message: "success"})
+//             })
+//             .catch(error => res.status(400).json({ message: "bad-request", data: error.message }))
+//         } else {
+//             res.json({message: "failed", data: "this user is already unban"})
+//         }
+//     })
+//     .catch(error => res.status(400).json({ message: "bad-request", data: error.message }))
+// }
 
 exports.findstudent = (req, res) => {
     const { studentid } = req.body

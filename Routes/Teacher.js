@@ -8,6 +8,6 @@ router
     .post("/createadmin", createadmin)
     .post("/update/:id", update)
     .post("/ban/:id", ban)
-    .post("/unban/:id", unban)
+    // .post("/unban/:id", unban)
 
 module.exports = router;
