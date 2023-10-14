@@ -18,12 +18,12 @@ exports.find = (req, res) => {
         page: parseInt(req.query.page) || 0,
         limit: parseInt(req.query.limit) || 10
     }
-    YearAndSection.find()
+    YearAndSection.find({})
     .skip(pageOptions.page * pageOptions.limit)
     .limit(pageOptions.limit)
     .sort({'createdAt': -1})    
     .then(items => {
-        YearAndSection.countDocuments()
+        YearAndSection.countDocuments({})
         .then(count => {
             const totalPages = Math.ceil(count / 10)
             res.json({ message: "success", data: items.filter(e => !e.deletedAt), pages: totalPages })

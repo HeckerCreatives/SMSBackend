@@ -59,7 +59,7 @@ exports.findadvisory = (req, res) => {
         ])
         .sort({ 'createdAt': -1 })
         .then(subjects => {
-            if (subjects && subjects.length > 0) {
+            if (subjects && subjects.length > 0 && data) {
                 const yearAndSectionIds = subjects.map(subject => subject.yearandsection._id);
                 
                 Student.find({ yearandsection: data.yearandsection._id })

@@ -93,7 +93,7 @@ exports.teachersubject = (req,res) => {
         .sort({'createdAt': -1})
         .then(data => {
             const items = data.filter(subject => subject.yearandsection.year === quarter.year)
-            console.log(data)
+            // console.log(data)
             res.json({message: "success", data: items})
         })
         .catch(error => res.status(400).json({ message: "bad-request", data: error.message }))
